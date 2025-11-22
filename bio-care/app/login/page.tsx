@@ -1,37 +1,85 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+// app/login/page.tsx
+import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 export default function LoginPage() {
   return (
-    <div className="container mx-auto flex min-h-[70vh] items-center justify-center px-4 py-10">
-      <Card className="w-full max-w-md animate-fade-up">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-xl">Login</CardTitle>
-          <p className="text-xs text-muted-foreground">
-            Default login is for students. Admin will be protected separately in
-            a later step.
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4 text-sm">
-          <div className="space-y-2">
-            <label className="text-xs font-medium">Email</label>
-            <Input type="email" placeholder="you@example.com" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-medium">Password</label>
-            <Input type="password" placeholder="********" />
-          </div>
-          <Button className="w-full mt-2">Login</Button>
-          <p className="mt-2 text-xs text-center text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-primary underline-offset-4 hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="max-w-md w-full">
+        <Card className="rounded-2xl border border-slate-200/80 shadow-lg">
+          <CardHeader className="space-y-1 text-center">
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-muted-foreground">
+              Welcome back
+            </p>
+            <CardTitle className="text-2xl font-semibold">
+              Login to <span className="text-[#1717a6]">Bio Care</span>
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Continue your biology journey and track your progress.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4">
+              <div className="space-y-1 text-sm">
+                <label className="font-medium text-slate-700">Email</label>
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  className="rounded-xl focus-visible:ring-[#1717a6]"
+                />
+              </div>
+              <div className="space-y-1 text-sm">
+                <label className="font-medium text-slate-700">Password</label>
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  className="rounded-xl focus-visible:ring-[#1717a6]"
+                />
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <input
+                    id="remember"
+                    type="checkbox"
+                    className="h-3 w-3 rounded border-slate-300"
+                  />
+                  <label htmlFor="remember" className="text-slate-600">
+                    Remember me
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  className="text-[#1717a6] hover:underline font-medium"
+                >
+                  Forgot password?
+                </button>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full rounded-full bg-[#1717a6] hover:bg-[#141489]"
+              >
+                Login
+              </Button>
+            </form>
+
+            <p className="mt-4 text-xs text-center text-muted-foreground">
+              New to Bio Care?{" "}
+              <Link
+                href="/signup"
+                className="font-semibold text-[#1717a6] hover:underline"
+              >
+                Create a student account
+              </Link>
+            </p>
+
+            {/* Admin flag will be handled purely in backend/database – not shown here */}
+          </CardContent>
+        </Card>
+      </div>
     </div>
-  );
+  )
 }

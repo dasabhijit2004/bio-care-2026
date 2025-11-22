@@ -1,72 +1,118 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+// app/contact/page.tsx
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export default function ContactPage() {
   return (
-    <div className="container mx-auto px-4 py-10 space-y-8">
-      <header className="space-y-2 animate-fade-up">
-        <h1 className="text-2xl md:text-3xl font-semibold">Contact Us</h1>
-        <p className="text-sm md:text-base text-muted-foreground max-w-2xl">
-          Have questions about courses, batches, or admissions? Reach out and
-          we&apos;ll get back to you.
-        </p>
-      </header>
+    <div className="min-h-screen bg-background">
+      <section className="py-16 md:py-20">
+        <div className="max-w-5xl mx-auto px-4 grid gap-10 md:grid-cols-[1.1fr,1fr] items-start">
+          {/* Left: form */}
+          <Card className="border border-slate-200 shadow-sm rounded-2xl">
+            <CardHeader>
+              <CardTitle className="text-2xl font-semibold">
+                Get in touch with <span className="text-[#1717a6]">Bio Care</span>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                Have questions about batches, fees, or online classes? Send us a message
+                and our team will call you back.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-1 text-sm">
+                    <label className="font-medium text-slate-700">Full Name</label>
+                    <Input
+                      placeholder="Enter your name"
+                      className="rounded-xl focus-visible:ring-[#1717a6]"
+                    />
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <label className="font-medium text-slate-700">Phone Number</label>
+                    <Input
+                      placeholder="Your WhatsApp / Phone"
+                      className="rounded-xl focus-visible:ring-[#1717a6]"
+                    />
+                  </div>
+                </div>
 
-      <div className="grid gap-8 md:grid-cols-[2fr,1fr] animate-fade-up md:[animation-delay:120ms]">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base md:text-lg">
-              Send us a message
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm">
-            <div className="space-y-2">
-              <label className="text-xs font-medium">Name</label>
-              <Input placeholder="Your full name" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-medium">Email</label>
-              <Input type="email" placeholder="you@example.com" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-medium">Message</label>
-              <Textarea
-                rows={4}
-                placeholder="Tell us what you need help with..."
-              />
-            </div>
-            <Button className="w-full">Submit</Button>
-          </CardContent>
-        </Card>
+                <div className="space-y-1 text-sm">
+                  <label className="font-medium text-slate-700">Email</label>
+                  <Input
+                    type="email"
+                    placeholder="you@example.com"
+                    className="rounded-xl focus-visible:ring-[#1717a6]"
+                  />
+                </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base md:text-lg">
-              Coaching Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-xs text-muted-foreground">
-            <p>
-              <span className="font-semibold text-foreground">Address:</span>{" "}
-              (Add your coaching center address here)
-            </p>
-            <p>
-              <span className="font-semibold text-foreground">Phone:</span>{" "}
-              +91-XXXXXXXXXX
-            </p>
-            <p>
-              <span className="font-semibold text-foreground">Email:</span>{" "}
-              contact@biocare.com
-            </p>
-            <p>
-              <span className="font-semibold text-foreground">Timing:</span>{" "}
-              Mon–Sat, 8:00 AM – 8:00 PM
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+                <div className="space-y-1 text-sm">
+                  <label className="font-medium text-slate-700">Class / Exam</label>
+                  <Input
+                    placeholder="e.g. Class 10, NEET 2026"
+                    className="rounded-xl focus-visible:ring-[#1717a6]"
+                  />
+                </div>
+
+                <div className="space-y-1 text-sm">
+                  <label className="font-medium text-slate-700">Message</label>
+                  <textarea
+                    rows={4}
+                    placeholder="Share your query. Ex: Need NEET crash course details."
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#1717a6] bg-white"
+                  />
+                </div>
+
+                <Button className="mt-2 rounded-full bg-[#1717a6] hover:bg-[#141489] w-full">
+                  Send Message
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Right: info */}
+          <div className="space-y-6">
+            <div className="rounded-2xl bg-[#1717a6] text-white p-6 shadow-lg relative overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#dff7d7]/20 rounded-full blur-2xl" />
+              <h2 className="text-xl font-semibold mb-2">Coaching Center Address</h2>
+              <p className="text-sm text-blue-100">
+                Bio Care Private Coaching Center
+                <br />
+                (Add your full address here)
+              </p>
+
+              <div className="mt-4 space-y-2 text-sm text-blue-100">
+                <p>
+                  <span className="font-semibold text-white">Call / WhatsApp: </span>
+                  +91-XXXXXXXXXX
+                </p>
+                <p>
+                  <span className="font-semibold text-white">Email: </span>
+                  support@biocare.in
+                </p>
+                <p>
+                  <span className="font-semibold text-white">Timings: </span>
+                  7:00 AM – 9:00 PM (All days)
+                </p>
+              </div>
+            </div>
+
+            <Card className="rounded-2xl border border-slate-200">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">
+                  Online + Offline support
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground space-y-2">
+                <p>• Doubt clearing through WhatsApp / Telegram group</p>
+                <p>• Recorded lectures on Bio Care website</p>
+                <p>• Practice tests & performance dashboard for every student</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
     </div>
-  );
+  )
 }

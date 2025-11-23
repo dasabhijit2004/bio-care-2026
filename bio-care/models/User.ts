@@ -5,18 +5,17 @@ const UserSchema = new Schema(
     name: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
+    class: { type: String, required: true },
 
-    // Admin flag (default false)
     isAdmin: { type: Boolean, default: false },
-
-    // Student approval (pending by default)
     approved: { type: Boolean, default: false },
 
-    // Enrolled courses
+    // FIX: add default: []
     enrolledCourses: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
+        default: [], 
       },
     ],
   },

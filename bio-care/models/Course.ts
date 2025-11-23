@@ -1,32 +1,17 @@
-import mongoose, { Schema, models } from "mongoose";
+import mongoose from "mongoose";
 
-const CourseSchema = new Schema(
-  {
-    title: { type: String, required: true },
-    description: String,
-    thumbnail: String,
-    price: { type: Number, required: true },
-
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+const CourseSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  price: Number,
+  thumbnail: String,
+  lessons: [
+    {
+      title: String,
+      videoUrl: String,
+      pdfUrl: String,
     },
+  ],
+});
 
-    chapters: [
-      {
-        title: String,
-        videos: [String], // video URLs
-        notes: [String],  // pdf/doc URLs
-        quizzes: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Quiz",
-          },
-        ],
-      },
-    ],
-  },
-  { timestamps: true }
-);
-
-export default models.Course || mongoose.model("Course", CourseSchema);
+export default mongoose.models.Course || mongoose.model("Course", CourseSchema);

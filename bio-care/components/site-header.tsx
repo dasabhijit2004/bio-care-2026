@@ -1,122 +1,171 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter, usePathname } from "next/navigation";
+
+// Shadcn UI Sheet (for mobile menu)
 import {
   Sheet,
-  SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
+
 import { Menu } from "lucide-react";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/courses", label: "Courses" },
-  { href: "/practice", label: "Practice" },
-  { href: "/contact", label: "Contact" },
-];
+export default function SiteHeader() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-function NavLinks() {
+  const router = useRouter();
   const pathname = usePathname();
 
-  return (
-    <nav className="flex items-center gap-6 text-sm font-medium">
-      {navLinks.map((link) => {
-        const isActive =
-          link.href === "/"
-            ? pathname === "/"
-            : pathname.startsWith(link.href);
+  // Re-check user when route changes
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const res = await fetch("/api/auth/me", { cache: "no-store" });
+        const data = await res.json();
+        setUser(data.user || null);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkUser();
+  }, [pathname]);
 
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`transition-colors hover:text-primary ${
-              isActive ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            {link.label}
-          </Link>
-        );
-      })}
-    </nav>
-  );
-}
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.refresh();
+    setUser(null);
+    router.push("/login");
+  };
 
-export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
-            BC
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-sm font-semibold tracking-tight">
-              Bio Care
-            </span>
-            <span className="text-[11px] text-muted-foreground">
-              Private Coaching Center
-            </span>
-          </div>
+    <header className="w-full border-b bg-white shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+
+        {/* LOGO */}
+        <Link href="/" className="text-xl font-bold text-[#1717a6]">
+          Bio Care
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden items-center gap-6 md:flex">
-          <NavLinks />
+        {/* DESKTOP NAV */}
+        <nav className="hidden md:flex items-center gap-6 text-sm">
+          <Link href="/" className="hover:text-[#1717a6]">Home</Link>
+          <Link href="/courses" className="hover:text-[#1717a6]">Courses</Link>
+          <Link href="/contact" className="hover:text-[#1717a6]">Contact</Link>
 
-          <div className="flex items-center gap-3">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href="/signup">Sign Up</Link>
-            </Button>
-          </div>
-        </div>
+          {loading && <span className="text-xs text-muted-foreground">...</span>}
 
-        {/* Mobile Menu */}
-        <div className="flex items-center gap-2 md:hidden">
-          <Button asChild variant="outline" size="sm">
-            <Link href="/login">Login</Link>
-          </Button>
-
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Open menu">
-                <Menu className="h-5 w-5" />
+          {!loading && !user && (
+            <>
+              <Link href="/login" className="font-medium text-[#1717a6]">Login</Link>
+              <Button asChild className="bg-[#1717a6] text-white rounded-full px-4 py-1">
+                <Link href="/signup">Signup</Link>
               </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle>Bio Care</SheetTitle>
-              </SheetHeader>
-              <div className="mt-6 flex flex-col gap-4">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link.label}
+            </>
+          )}
+
+          {!loading && user && !user.isAdmin && (
+            <>
+              <Link href="/practice" className="hover:text-[#1717a6]">Practice</Link>
+              <Link href="/dashboard/student" className="hover:text-[#1717a6]">Dashboard</Link>
+              <Button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 text-white rounded-full px-4"
+              >
+                Logout
+              </Button>
+            </>
+          )}
+
+          {!loading && user?.isAdmin && (
+            <>
+              <Link href="/admin" className="hover:text-[#1717a6]">Admin Panel</Link>
+              <Button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 text-white rounded-full px-4"
+              >
+                Logout
+              </Button>
+            </>
+          )}
+        </nav>
+
+        {/* MOBILE MENU (Hamburger) */}
+        <Sheet>
+          <SheetTrigger asChild className="md:hidden">
+            <Button variant="ghost" size="icon">
+              <Menu className="h-6 w-6 text-[#1717a6]" />
+            </Button>
+          </SheetTrigger>
+
+          <SheetContent side="right" className="w-64 p-2">
+            <SheetHeader>
+              <SheetTitle className="text-[#1717a6] font-bold">
+                Bio Care
+              </SheetTitle>
+            </SheetHeader>
+
+            <div className="mt-6 flex flex-col gap-4 text-sm">
+
+              <Link href="/" className="hover:text-[#1717a6]">Home</Link>
+              <Link href="/courses" className="hover:text-[#1717a6]">Courses</Link>
+              <Link href="/contact" className="hover:text-[#1717a6]">Contact</Link>
+
+              {loading && <span className="text-xs text-muted-foreground">...</span>}
+
+              {!loading && !user && (
+                <>
+                  <Link href="/login" className="hover:text-[#1717a6] font-medium">
+                    Login
                   </Link>
-                ))}
-                <div className="mt-4 flex gap-3">
-                  <Button asChild variant="outline" className="flex-1">
-                    <Link href="/login">Login</Link>
+
+                  <Button asChild className="bg-[#1717a6] text-white rounded-full">
+                    <Link href="/signup">Signup</Link>
                   </Button>
-                  <Button asChild className="flex-1">
-                    <Link href="/signup">Sign Up</Link>
+                </>
+              )}
+
+              {/* Student */}
+              {!loading && user && !user.isAdmin && (
+                <>
+                  <Link href="/practice" className="hover:text-[#1717a6]">Practice</Link>
+                  <Link href="/dashboard/student" className="hover:text-[#1717a6]">
+                    Dashboard
+                  </Link>
+                  <Button
+                    onClick={handleLogout}
+                    className="bg-red-500 hover:bg-red-600 text-white rounded-full"
+                  >
+                    Logout
                   </Button>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+                </>
+              )}
+
+              {/* Admin */}
+              {!loading && user?.isAdmin && (
+                <>
+                  <Link href="/admin" className="hover:text-[#1717a6]">
+                    Admin Panel
+                  </Link>
+                  <Button
+                    onClick={handleLogout}
+                    className="bg-red-500 hover:bg-red-600 text-white rounded-full"
+                  >
+                    Logout
+                  </Button>
+                </>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   );

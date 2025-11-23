@@ -1,10 +1,60 @@
-// app/signup/page.tsx
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function SignupPage() {
+  const router = useRouter();
+
+  // Form states
+  const [name, setName] = useState("");
+  const [studentClass, setStudentClass] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  const handleSignup = async (e: any) => {
+    e.preventDefault();
+    if (password !== confirm) return alert("Passwords do not match!");
+
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          userClass: studentClass,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Signup failed");
+        setLoading(false);
+        return;
+      }
+
+      alert("Signup successful! Wait for admin approval.");
+      router.push("/login");
+
+    } catch (err) {
+      alert("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="max-w-lg w-full">
@@ -16,42 +66,30 @@ export default function SignupPage() {
             <CardTitle className="text-2xl font-semibold">
               Create your student account
             </CardTitle>
-            <p className="text-xs text-muted-foreground">
-              Access courses, practice sets and a personalised performance dashboard.
-            </p>
           </CardHeader>
+
           <CardContent>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSignup}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-1 text-sm">
                   <label className="font-medium text-slate-700">Full Name</label>
                   <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
                     placeholder="Student name"
-                    className="rounded-xl focus-visible:ring-[#1717a6]"
+                    autoComplete="name"
+                    className="rounded-xl"
                   />
                 </div>
+
                 <div className="space-y-1 text-sm">
                   <label className="font-medium text-slate-700">Class</label>
                   <Input
-                    placeholder="e.g. 9, 10, 11, 12"
-                    className="rounded-xl focus-visible:ring-[#1717a6]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-1 text-sm">
-                  <label className="font-medium text-slate-700">Phone</label>
-                  <Input
-                    placeholder="WhatsApp number"
-                    className="rounded-xl focus-visible:ring-[#1717a6]"
-                  />
-                </div>
-                <div className="space-y-1 text-sm">
-                  <label className="font-medium text-slate-700">Board / Exam</label>
-                  <Input
-                    placeholder="WBBSE / CBSE / NEET"
-                    className="rounded-xl focus-visible:ring-[#1717a6]"
+                    placeholder="Enter your class"
+                    value={studentClass}
+                    onChange={(e) => setStudentClass(e.target.value)}
+                    required
                   />
                 </div>
               </div>
@@ -60,8 +98,12 @@ export default function SignupPage() {
                 <label className="font-medium text-slate-700">Email</label>
                 <Input
                   type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="rounded-xl focus-visible:ring-[#1717a6]"
+                  autoComplete="email"
+                  className="rounded-xl"
                 />
               </div>
 
@@ -70,36 +112,41 @@ export default function SignupPage() {
                   <label className="font-medium text-slate-700">Password</label>
                   <Input
                     type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a password"
-                    className="rounded-xl focus-visible:ring-[#1717a6]"
+                    autoComplete="new-password"
+                    className="rounded-xl"
                   />
                 </div>
+
                 <div className="space-y-1 text-sm">
                   <label className="font-medium text-slate-700">Confirm Password</label>
                   <Input
                     type="password"
+                    required
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
                     placeholder="Repeat password"
-                    className="rounded-xl focus-visible:ring-[#1717a6]"
+                    autoComplete="new-password"
+                    className="rounded-xl"
                   />
                 </div>
               </div>
 
-              {/* Note: Admin flag will be handled in DB / backend only – default is student */}
-
               <Button
                 type="submit"
+                disabled={loading}
                 className="w-full rounded-full bg-[#1717a6] hover:bg-[#141489]"
               >
-                Create Account
+                {loading ? "Creating..." : "Create Account"}
               </Button>
             </form>
 
             <p className="mt-4 text-xs text-center text-muted-foreground">
               Already have an account?{" "}
-              <Link
-                href="/login"
-                className="font-semibold text-[#1717a6] hover:underline"
-              >
+              <Link href="/login" className="font-semibold text-[#1717a6]">
                 Login instead
               </Link>
             </p>
@@ -107,5 +154,5 @@ export default function SignupPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

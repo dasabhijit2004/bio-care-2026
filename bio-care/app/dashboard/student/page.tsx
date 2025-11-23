@@ -1,194 +1,398 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Legend,
+} from "recharts";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import Link from "next/link";
+
+type RecentQuiz = {
+  id: string;
+  title: string;
+  date: string;
+  score: number;
+  total: number;
+  status: "Passed" | "Improvement";
+};
+
+type TopicStat = {
+  topic: string;
+  accuracy: number;
+};
+
+type ProgressPoint = {
+  label: string;
+  score: number;
+};
 
 export default function StudentDashboardPage() {
+  const [name, setName] = useState<string>("Student");
+  const [userClass, setUserClass] = useState<string>("");
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  // 🔹 Demo data for now — replace with API data later
+  const progressData: ProgressPoint[] = [
+    { label: "Test 1", score: 62 },
+    { label: "Test 2", score: 71 },
+    { label: "Test 3", score: 78 },
+    { label: "Test 4", score: 82 },
+    { label: "Test 5", score: 88 },
+  ];
+
+  const topicStats: TopicStat[] = [
+    { topic: "Human Physiology", accuracy: 92 },
+    { topic: "Plant Physiology", accuracy: 84 },
+    { topic: "Genetics", accuracy: 76 },
+    { topic: "Ecology", accuracy: 89 },
+  ];
+
+  const recentQuizzes: RecentQuiz[] = [
+    {
+      id: "1",
+      title: "Human Physiology - Test 3",
+      date: "18 Nov 2025",
+      score: 44,
+      total: 50,
+      status: "Passed",
+    },
+    {
+      id: "2",
+      title: "Plant Physiology - Test 2",
+      date: "11 Nov 2025",
+      score: 32,
+      total: 50,
+      status: "Improvement",
+    },
+    {
+      id: "3",
+      title: "NEET PYQ - Biology Set A",
+      date: "05 Nov 2025",
+      score: 172,
+      total: 200,
+      status: "Passed",
+    },
+  ];
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/auth/me", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.user) {
+          setName(data.user.name || "Student");
+          setUserClass(data.user.class || "");
+        }
+      } catch (err) {
+        console.error("Failed to load user:", err);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background">
-
-      {/* HEADER */}
-      <section className="border-b bg-[#dff7d7] py-10 md:py-12">
-        <div className="max-w-6xl mx-auto px-4 flex flex-wrap items-center justify-between gap-6">
-          
-          {/* Welcome Text */}
-          <div className="space-y-1">
-            <p className="text-xs font-semibold tracking-[0.25em] uppercase text-[#1717a6]/80">
-              Student Dashboard
+    <div className="min-h-screen bg-[#f5f7ff]">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        {/* =================== HEADER =================== */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+        >
+          <div>
+            <p className="text-xs uppercase tracking-widest text-[#1717a6]/70">
+              Bio Care • Student Dashboard
             </p>
-            <h1 className="text-2xl md:text-3xl font-semibold text-[#1717a6]">
-              Welcome back, Student 👋
+            <h1 className="mt-2 text-2xl md:text-3xl font-bold text-[#1717a6]">
+              Welcome back,{" "}
+              <span className="text-black">
+                {loadingUser ? "..." : name.split(" ")[0]}
+              </span>
             </h1>
-            <p className="text-sm text-[#1717a6]/80">
-              Track your progress, continue learning, and improve every day.
+            <p className="mt-1 text-sm text-muted-foreground">
+              Track your Biology performance, recent quizzes, and topic-wise
+              progress in one place.
+              {userClass && (
+                <span className="ml-2 font-medium text-[#1717a6]">
+                  • Class {userClass}
+                </span>
+              )}
             </p>
           </div>
 
-          {/* Profile photo */}
-          <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-[#1717a6] shadow-lg">
-            <Image src="/placeholder.jpg" alt="Student" fill className="object-cover" />
-          </div>
-
-        </div>
-      </section>
-
-      {/* MAIN CONTENT */}
-      <section className="max-w-6xl mx-auto px-4 py-10 md:py-14 space-y-10">
-
-        {/* QUICK STATS */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card className="rounded-2xl border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-            <CardContent className="py-5">
-              <p className="text-xs text-muted-foreground">Overall Accuracy</p>
-              <p className="mt-2 text-3xl font-semibold text-[#1717a6]">78%</p>
-              <p className="mt-2 text-xs bg-emerald-50 text-emerald-700 inline-block px-3 py-1 rounded-full">
-                +5% from last week
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-2xl border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-            <CardContent className="py-5">
-              <p className="text-xs text-muted-foreground">Tests Attempted</p>
-              <p className="mt-2 text-3xl font-semibold text-slate-900">16</p>
-              <p className="text-xs text-muted-foreground mt-2">Across all chapters</p>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-2xl border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-            <CardContent className="py-5">
-              <p className="text-xs text-muted-foreground">Questions Solved</p>
-              <p className="mt-2 text-3xl font-semibold text-slate-900">1,245</p>
-              <p className="text-xs text-muted-foreground mt-2">In the last 30 days</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* PROGRESS + LAST TEST SUMMARY */}
-        <div className="grid gap-6 md:grid-cols-[1.2fr,1fr] items-start">
-
-          {/* PROGRESS */}
-          <Card className="rounded-2xl border-slate-200 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg">Chapter-wise Progress</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
-
-              {[
-                { name: "Cell – The Unit of Life", progress: 82 },
-                { name: "Human Physiology", progress: 58 },
-                { name: "Plant Physiology", progress: 43 },
-              ].map((c, i) => (
-                <div key={i}>
-                  <div className="flex justify-between mb-1 text-xs font-medium text-slate-700">
-                    <span>{c.name}</span>
-                    <span>{c.progress}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-slate-200 overflow-hidden">
-                    <div
-                      className="h-full bg-[#1717a6] transition-all duration-500"
-                      style={{ width: `${c.progress}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-
-            </CardContent>
-          </Card>
-
-          {/* LAST TEST SUMMARY */}
-          <Card className="rounded-2xl border-slate-200 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg">Recent Test Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-              <div className="flex justify-between">
-                <span>Score</span>
-                <span className="font-semibold text-[#1717a6]">148 / 180</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Rank</span>
-                <span className="font-semibold">Top 12%</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Time Taken</span>
-                <span className="font-semibold">2h 45m</span>
-              </div>
-
-              <div className="text-xs text-muted-foreground">
-                <p className="font-semibold text-slate-700 mb-1">Focus Areas:</p>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Revise Human Physiology – Part B</li>
-                  <li>Practice Genetics MCQs</li>
-                  <li>Attempt previous year NEET questions</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-
-        </div>
-
-        {/* ACTIVE COURSE CARD */}
-        <Card className="rounded-2xl border-slate-200 shadow-sm">
-          <CardContent className="py-6 flex flex-wrap items-center justify-between gap-6">
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Active Course</p>
-              <p className="text-base md:text-lg font-semibold">
-                Class 12 Biology – NEET Advance
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Continue from Lecture 18: Human Reproduction
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="rounded-full border-slate-300 text-xs px-5"
-              >
-                Watch Lecture
-              </Button>
-              <Button className="rounded-full bg-[#1717a6] hover:bg-[#141489] text-xs px-5">
-                Start Quiz
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* QUICK LINKS */}
-        <div className="grid md:grid-cols-3 gap-6 pt-6">
-          {[
-            {
-              title: "Practice Questions",
-              desc: "Solve daily MCQs & worksheets.",
-            },
-            {
-              title: "Your Courses",
-              desc: "See enrolled courses, videos & notes.",
-            },
-            {
-              title: "Performance Reports",
-              desc: "Track accuracy, speed & improvements.",
-            },
-          ].map((feature, i) => (
-            <Card
-              key={i}
-              className="rounded-2xl border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all"
+          <div className="flex gap-3">
+            <Button
+              asChild
+              className="bg-[#1717a6] hover:bg-[#10107d] text-white rounded-full px-5"
             >
+              <Link href="/practice">Go to Practice</Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="border-[#1717a6]/30 text-[#1717a6] rounded-full px-5 bg-white"
+            >
+              <Link href="/courses">View My Courses</Link>
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* =================== TOP STATS =================== */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid gap-4 md:grid-cols-3"
+        >
+          <Card className="border-none bg-[#dff7d7] shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-[#1717a6]">
+                Overall Accuracy
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-end justify-between">
+              <div>
+                <p className="text-3xl font-bold text-[#1717a6]">86%</p>
+                <p className="text-xs text-green-700 mt-1">
+                  +4% this month
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center text-xs font-semibold text-[#1717a6]">
+                HS / NEET
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-none bg-white shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-[#1717a6]">
+                Quizzes Completed
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-end justify-between">
+              <div>
+                <p className="text-3xl font-bold text-[#1717a6]">18</p>
+                <p className="text-xs text-emerald-600 mt-1">
+                  3 this week
+                </p>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Keep the streak!
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-none bg-white shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-[#1717a6]">
+                Active Courses
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-end justify-between">
+              <div>
+                <p className="text-3xl font-bold text-[#1717a6]">2</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Class 12 Board, NEET Biology
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* =================== CHARTS ROW =================== */}
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Performance over time */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="lg:col-span-2"
+          >
+            <Card className="bg-white shadow-sm border border-slate-100">
               <CardHeader>
-                <CardTitle className="text-lg text-[#1717a6]">
-                  {feature.title}
+                <CardTitle className="text-sm md:text-base text-[#1717a6] flex items-center justify-between">
+                  Performance Over Time
+                  <span className="text-xs font-normal text-muted-foreground">
+                    Last 5 quizzes
+                  </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                {feature.desc}
+              <CardContent className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={progressData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e5e7eb"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="label"
+                      tick={{ fontSize: 12 }}
+                      tickMargin={8}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 12 }}
+                      tickMargin={8}
+                      domain={[0, 100]}
+                    />
+                    <Tooltip />
+                    <Line
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#1717a6"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
-          ))}
+          </motion.div>
+
+          {/* Topic-wise accuracy */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Card className="bg-white shadow-sm border border-slate-100">
+              <CardHeader>
+                <CardTitle className="text-sm md:text-base text-[#1717a6]">
+                  Topic-wise Accuracy
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topicStats} layout="vertical">
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e5e7eb"
+                      horizontal={false}
+                    />
+                    <XAxis type="number" domain={[0, 100]} hide />
+                    <YAxis
+                      dataKey="topic"
+                      type="category"
+                      tick={{ fontSize: 11 }}
+                      width={110}
+                    />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      dataKey="accuracy"
+                      name="Accuracy (%)"
+                      radius={[0, 8, 8, 0]}
+                      fill="#1717a6"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
 
-      </section>
+        {/* =================== RECENT QUIZZES =================== */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Card className="bg-white shadow-sm border border-slate-100">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-sm md:text-base text-[#1717a6]">
+                  Recent Quizzes
+                </CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Review your latest quiz attempts and scores.
+                </p>
+              </div>
+              <Button
+                asChild
+                variant="outline"
+                className="text-xs md:text-sm border-[#1717a6]/40 text-[#1717a6] rounded-full"
+              >
+                <Link href="/practice">Take a new quiz</Link>
+              </Button>
+            </CardHeader>
+
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b bg-[#dff7d7]/60">
+                      <th className="text-left py-2 px-3 font-medium text-[#1717a6]">
+                        Quiz
+                      </th>
+                      <th className="text-left py-2 px-3 font-medium text-[#1717a6]">
+                        Date
+                      </th>
+                      <th className="text-left py-2 px-3 font-medium text-[#1717a6]">
+                        Score
+                      </th>
+                      <th className="text-left py-2 px-3 font-medium text-[#1717a6]">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentQuizzes.map((quiz) => {
+                      const percent = Math.round(
+                        (quiz.score / quiz.total) * 100
+                      );
+                      const isPassed = quiz.status === "Passed";
+
+                      return (
+                        <tr
+                          key={quiz.id}
+                          className="border-b last:border-0 hover:bg-[#f4f6ff]"
+                        >
+                          <td className="py-2 px-3 text-[13px]">
+                            {quiz.title}
+                          </td>
+                          <td className="py-2 px-3 text-[13px] text-muted-foreground">
+                            {quiz.date}
+                          </td>
+                          <td className="py-2 px-3 text-[13px]">
+                            <span className="font-medium text-[#1717a6]">
+                              {quiz.score}/{quiz.total}
+                            </span>{" "}
+                            <span className="text-xs text-muted-foreground">
+                              ({percent}%)
+                            </span>
+                          </td>
+                          <td className="py-2 px-3">
+                            <span
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                                isPassed
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : "bg-amber-100 text-amber-700"
+                              }`}
+                            >
+                              {quiz.status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 }

@@ -11,8 +11,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/students", label: "Pending Students" },
     { href: "/admin/courses/create", label: "Create Course" },
     { href: "/admin/courses", label: "Manage Courses" },
-    { href: "/admin/quizzes", label: "Quizzes / Tests" },
     { href: "/admin/course-requests", label: "Course Requests" },
+    { href: "/admin/insights", label: "Insights" }, // ⭐ New menu item
   ];
 
   return (
@@ -38,7 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
       </aside>
 
-      {/* PAGE CONTENT */}
+      {/* CONTENT */}
       <main className="flex-1 p-8">{children}</main>
     </div>
   );

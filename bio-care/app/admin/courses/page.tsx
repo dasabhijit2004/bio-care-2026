@@ -48,16 +48,6 @@ export default function ManageCourses() {
                 >
                   <Link href={`/admin/courses/${c._id}`}>Edit Content</Link>
                 </Button>
-
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-[#1717a6] text-[#1717a6] w-full rounded-full"
-                >
-                  <Link href={`/admin/courses/insights/${c._id}`}>
-                    View Insights
-                  </Link>
-                </Button>
               </div>
             </CardContent>
           </Card>

@@ -12,6 +12,8 @@ export default function CreateCoursePage() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+
   const [course, setCourse] = useState({
     title: "",
     description: "",
@@ -19,6 +21,32 @@ export default function CreateCoursePage() {
     thumbnail: "",
   });
 
+  // ---------------- Upload Thumbnail ----------------
+  const handleThumbnailUpload = async (file: File) => {
+    if (!file) return;
+
+    setUploadingThumbnail(true);
+
+    const formData = new FormData();
+    formData.append("thumbnail", file);
+
+    const res = await fetch("/api/admin/upload-thumbnail", {
+      method: "POST",
+      body: formData,
+    });
+
+    setUploadingThumbnail(false);
+
+    if (!res.ok) {
+      alert("Thumbnail upload failed");
+      return;
+    }
+
+    const data = await res.json();
+    setCourse({ ...course, thumbnail: data.url });
+  };
+
+  // ---------------- Create Course ----------------
   const handleCreate = async () => {
     if (!course.title || !course.price) {
       alert("Title and Price are required");
@@ -46,8 +74,6 @@ export default function CreateCoursePage() {
 
     const data = await res.json();
     alert("Course created successfully!");
-
-    // Redirect to course editor page
     router.push(`/admin/courses/${data.course._id}`);
   };
 
@@ -67,6 +93,8 @@ export default function CreateCoursePage() {
         </CardHeader>
 
         <CardContent className="space-y-5">
+
+          {/* Title */}
           <div>
             <label className="text-sm font-medium text-[#1717a6]">Course Title</label>
             <Input
@@ -76,6 +104,7 @@ export default function CreateCoursePage() {
             />
           </div>
 
+          {/* Description */}
           <div>
             <label className="text-sm font-medium text-[#1717a6]">Description</label>
             <Textarea
@@ -87,33 +116,44 @@ export default function CreateCoursePage() {
             />
           </div>
 
+          {/* Price */}
           <div>
-            <label className="text-sm font-medium text-[#1717a6]">
-              Price (₹)
-            </label>
+            <label className="text-sm font-medium text-[#1717a6]">Price (₹)</label>
             <Input
               type="number"
               className="mt-1"
               placeholder="Enter price"
-              onChange={(e) =>
-                setCourse({ ...course, price: e.target.value })
-              }
+              onChange={(e) => setCourse({ ...course, price: e.target.value })}
             />
           </div>
 
+          {/* Thumbnail Upload */}
           <div>
             <label className="text-sm font-medium text-[#1717a6]">
-              Thumbnail URL (optional)
+              Upload Thumbnail
             </label>
+
             <Input
-              className="mt-1"
-              placeholder="https://example.com/image.jpg"
-              onChange={(e) =>
-                setCourse({ ...course, thumbnail: e.target.value })
-              }
+              type="file"
+              accept="image/*"
+              className="mt-2"
+              onChange={(e) => e.target.files && handleThumbnailUpload(e.target.files[0])}
             />
+
+            {uploadingThumbnail && (
+              <p className="text-sm text-blue-600 mt-2">Uploading thumbnail...</p>
+            )}
+
+            {course.thumbnail && (
+              <img
+                src={course.thumbnail}
+                className="mt-3 w-40 h-24 object-cover rounded border"
+                alt="thumbnail"
+              />
+            )}
           </div>
 
+          {/* Submit */}
           <Button
             onClick={handleCreate}
             disabled={loading}

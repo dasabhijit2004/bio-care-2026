@@ -9,6 +9,8 @@ export default function AdminHome() {
       <h1 className="text-3xl font-bold text-[#1717a6]">Admin Dashboard</h1>
 
       <div className="grid md:grid-cols-3 gap-6">
+
+        {/* Pending */}
         <Link href="/admin/students">
           <Card className="cursor-pointer hover:shadow-md transition shadow-sm">
             <CardHeader>
@@ -20,6 +22,7 @@ export default function AdminHome() {
           </Card>
         </Link>
 
+        {/* Create Course */}
         <Link href="/admin/courses/create">
           <Card className="cursor-pointer hover:shadow-md transition shadow-sm">
             <CardHeader>
@@ -31,6 +34,7 @@ export default function AdminHome() {
           </Card>
         </Link>
 
+        {/* Manage Courses */}
         <Link href="/admin/courses">
           <Card className="cursor-pointer hover:shadow-md transition shadow-sm">
             <CardHeader>
@@ -41,6 +45,19 @@ export default function AdminHome() {
             </CardContent>
           </Card>
         </Link>
+
+        {/* NEW Insights Card */}
+        <Link href="/admin/insights">
+          <Card className="cursor-pointer hover:shadow-md transition shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-[#1717a6]">Insights</CardTitle>
+            </CardHeader>
+            <CardContent className="text-muted-foreground">
+              View analytics for courses, chapters, quizzes & student performance.
+            </CardContent>
+          </Card>
+        </Link>
+
       </div>
     </div>
   );

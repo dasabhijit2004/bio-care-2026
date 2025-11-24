@@ -9,14 +9,12 @@ export async function GET(req: Request, context: any) {
 
     const course = await Course.findById(id);
 
-    if (!course) {
-      return new Response(JSON.stringify({ error: "Course not found" }), {
-        status: 404,
-      });
-    }
+    if (!course)
+      return new Response(JSON.stringify({ error: "Not found" }), { status: 404 });
 
     return new Response(JSON.stringify({ course }), { status: 200 });
-  } catch (e) {
+
+  } catch (err) {
     return new Response(JSON.stringify({ error: "Failed" }), { status: 500 });
   }
 }

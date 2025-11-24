@@ -81,7 +81,7 @@ export default function CourseDetail() {
                       {chap.quizzes.map((q: any, idx: number) => (
                         <li key={idx}>
                           <Link
-                            href={`/practice/quiz/${q.quizId}`}
+                            href={`/practice/quiz/${course._id}/${chap._id}/${q._id}`}
                             className="text-blue-600 underline"
                           >
                             {q.title}

@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       const stream = createWriteStream(filePath);
       stream.write(buffer);
       stream.end();
-      stream.on("finish", resolve);
+      stream.on("finish", () => resolve(true));
       stream.on("error", reject);
     });
 

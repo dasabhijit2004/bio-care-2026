@@ -25,12 +25,30 @@ export default function EditCourse() {
 
   const [newChapter, setNewChapter] = useState({ title: "" });
   const [newVideo, setNewVideo] = useState({ chapterId: "", title: "", url: "" });
-  const [newPdf, setNewPdf] = useState({ chapterId: "", title: "", url: "" });
-  const [newQuiz, setNewQuiz] = useState({
+  const [newPdf, setNewPdf] = useState<{
+    chapterId: string;
+    title: string;
+    url: string;        // still here if you ever want URL mode
+    file: File | null;  // <-- add this
+  }>({
     chapterId: "",
-    question: "",
-    options: ["", "", "", ""],
-    correctAnswer: 0,
+    title: "",
+    url: "",
+    file: null,
+  });
+
+  const [newQuiz, setNewQuiz] = useState<{
+    chapterId: string;
+    title: string;
+    questions: {
+      question: string;
+      options: string[];
+      correctAnswer: number;
+    }[];
+  }>({
+    chapterId: "",
+    title: "",
+    questions: [],
   });
 
   // Load the course
@@ -119,12 +137,12 @@ export default function EditCourse() {
   const addQuiz = async () => {
     await fetch(`/api/admin/add-quiz`, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         courseId: id,
         chapterId: newQuiz.chapterId,
-        question: newQuiz.question,
-        options: newQuiz.options,
-        correctAnswer: Number(newQuiz.correctAnswer),
+        title: newQuiz.title,
+        questions: newQuiz.questions,
       }),
     });
 
@@ -378,12 +396,33 @@ export default function EditCourse() {
             type="file"
             accept="application/pdf"
             className="mt-3"
-            onChange={(e) => setNewPdf({ ...newPdf, file: e.target.files?.[0] })}
+            onChange={(e) =>
+              setNewPdf((prev) => ({
+                ...prev,
+                file: e.target.files?.[0] ?? null,
+              }))
+            }
           />
 
           <Button
             className="bg-[#1717a6] text-white mt-4"
             onClick={async () => {
+              if (!newPdf.chapterId) {
+                alert("Please select a chapter first");
+                return;
+              }
+
+              if (!newPdf.title) {
+                alert("Please enter a document title");
+                return;
+              }
+
+              if (!newPdf.file) {
+                alert("Please choose a PDF file");
+                return;
+              }
+
+              // 1) Upload PDF
               const fd = new FormData();
               fd.append("pdf", newPdf.file);
 
@@ -392,16 +431,33 @@ export default function EditCourse() {
                 body: fd,
               });
 
+              if (!uploadRes.ok) {
+                alert("Failed to upload PDF");
+                return;
+              }
+
               const { url } = await uploadRes.json();
 
+              // 2) Attach PDF to chapter
               await fetch(`/api/admin/add-pdf`, {
                 method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
                 body: JSON.stringify({
                   courseId: id,
                   chapterId: newPdf.chapterId,
                   title: newPdf.title,
                   url,
                 }),
+              });
+
+              // Reset + close
+              setNewPdf({
+                chapterId: "",
+                title: "",
+                url: "",
+                file: null,
               });
 
               setOpenPdf(false);
@@ -438,7 +494,7 @@ export default function EditCourse() {
             placeholder="Quiz Title"
             className="mt-4"
             onChange={(e) =>
-              setNewQuiz({ ...newQuiz, title: e.target.value })
+              setNewQuiz((prev) => ({ ...prev, title: e.target.value }))
             }
           />
 
@@ -452,12 +508,14 @@ export default function EditCourse() {
               className="mt-2"
               onChange={(e) => {
                 const count = Number(e.target.value);
+
                 const questions = Array.from({ length: count }, () => ({
                   question: "",
                   options: ["", "", "", ""],
                   correctAnswer: 0,
                 }));
-                setNewQuiz({ ...newQuiz, questions });
+
+                setNewQuiz((prev) => ({ ...prev, questions }));
               }}
             />
           </div>

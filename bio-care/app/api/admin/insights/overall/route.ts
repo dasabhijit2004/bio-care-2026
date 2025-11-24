@@ -82,8 +82,8 @@ export async function GET() {
     // --- quiz attempts timeline ---
     const attemptsTimelineMap: any = {};
     courses.forEach((course) => {
-      course.chapters.forEach((ch) => {
-        ch.quizzes.forEach((q) => {
+      course.chapters.forEach((ch: any) => {
+        ch.quizzes.forEach((q : any) => {
           q.results.forEach((r: any) => {
             const f = formatDate(r.attemptedAt);
             if (!f) return;

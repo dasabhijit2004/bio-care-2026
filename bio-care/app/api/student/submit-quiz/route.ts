@@ -11,6 +11,11 @@ export async function POST(req: Request) {
 
     const cookieJar = await cookies();
     const token = cookieJar.get("token")?.value;
+
+    if (!token) {
+      return Response.json({ error: "Unauthorized: No token found" }, { status: 401 });
+    }
+
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
 
     const course = await Course.findById(courseId);

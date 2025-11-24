@@ -24,11 +24,11 @@ export async function GET(req: NextRequest) {
     // -------- LOAD COURSES + QUIZZES --------
     const courses = await Course.find().lean();
 
-    let attempts = [];
+    let attempts: any[] = [];
     let totalCorrect = 0;
     let totalQuestions = 0;
-    let progressData = [];
-    let topicStatsMap = {};
+    let progressData: any[] = [];
+    let topicStatsMap: Record<string, number[]> = {};
 
     courses.forEach((course: any) => {
       course.chapters.forEach((ch: any) => {
@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
       });
     });
 
-    attempts.sort((a, b) => new Date(a.date) - new Date(b.date));
+    attempts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     progressData.sort(
       (a, b) => new Date(a.label).getTime() - new Date(b.label).getTime()
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
       topic,
       accuracy: Math.round(
         topicStatsMap[topic].reduce((a, b) => a + b, 0) /
-          topicStatsMap[topic].length
+        topicStatsMap[topic].length
       ),
     }));
 

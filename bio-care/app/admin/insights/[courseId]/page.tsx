@@ -74,8 +74,11 @@ export default function CourseInsightsPage() {
             outerRadius={100}
             label
           >
-            {attemptsData.map((_, idx: number) => (
-              <Cell key={idx} fill={["#1717a6", "#4caf50", "#ff9800", "#e91e63"][idx % 4]} />
+            {attemptsData.map((value: any, idx: number) => (
+              <Cell
+                key={idx}
+                fill={["#1717a6", "#4caf50", "#ff9800", "#e91e63"][idx % 4]}
+              />
             ))}
           </Pie>
           <Tooltip />

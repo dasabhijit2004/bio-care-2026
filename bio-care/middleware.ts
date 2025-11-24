@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // 1. Define Public Routes
+  // 1. Define Public Routes (Pages that don't need login)
   const publicRoutes = [
     "/",
     "/login",
@@ -15,15 +15,15 @@ export async function middleware(request: NextRequest) {
     "/contact",
   ];
 
-  // If it's a public route, let them pass
+  // If the user is on a public route, let them pass immediately
   if (publicRoutes.includes(path)) {
     return NextResponse.next();
   }
 
-  // 2. Read the token
+  // 2. Read the token from cookies
   const token = request.cookies.get("token")?.value;
 
-  // No token? Redirect to login
+  // If no token exists, redirect to login
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -33,31 +33,33 @@ export async function middleware(request: NextRequest) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
     
-    // Payload contains your data (e.g., isAdmin)
+    // Extract user role from the token payload
+    // Note: TypeScript might complain if it doesn't know payload structure, 
+    // but 'jose' returns a generic payload that works here.
     const isAdmin = payload.isAdmin;
 
-    // 4. Admin vs Student Redirection Logic
+    // 4. Role-Based Redirection Logic
     
-    // If user tries to go to /admin but is NOT an admin -> Send to Student Dashboard
+    // CASE A: User tries to access /admin but is NOT an admin -> Send to Student Dashboard
     if (path.startsWith("/admin") && !isAdmin) {
       return NextResponse.redirect(new URL("/dashboard/student", request.url));
     }
 
-    // If user tries to go to /dashboard/student but IS an admin -> Send to Admin Dashboard
+    // CASE B: User tries to access /dashboard/student but IS an admin -> Send to Admin Dashboard
     if (path.startsWith("/dashboard/student") && isAdmin) {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
 
-    // Allow request to proceed
+    // If checks pass, allow the request
     return NextResponse.next();
 
   } catch (e) {
-    // Token invalid or expired -> Redirect to login
+    // If token is invalid or expired, redirect to login
     return NextResponse.redirect(new URL("/login", request.url));
   }
 }
 
-// Configure which paths this middleware runs on
+// 5. Configuration: Define which paths the middleware runs on
 export const config = {
   matcher: [
     /*
@@ -66,7 +68,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - images (svg, png, jpg, jpeg, gif, webp) -> THIS FIXES YOUR IMAGE ISSUE
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

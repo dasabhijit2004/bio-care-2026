@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       title,
       description: description || "",
       price,
-      thumbnail: thumbnail || "/placeholder.jpg",
+      thumbnail: thumbnail || "/placeholder.png",
       chapters: [],
     });
 

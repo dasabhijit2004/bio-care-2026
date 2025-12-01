@@ -54,7 +54,7 @@ export default function CoursesPage() {
 
             <CardContent className="space-y-3">
               <Image
-                src={c.thumbnail || "/placeholder.jpg"}
+                src={c.thumbnail || "/placeholder.png"}
                 width={600}
                 height={300}
                 alt="Course"

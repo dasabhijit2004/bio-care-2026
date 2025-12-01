@@ -27,7 +27,7 @@ export default function ManageCourses() {
           >
             <div className="relative h-40">
               <Image
-                src={c.thumbnail || "/placeholder.jpg"}
+                src={c.thumbnail || "/placeholder.png"}
                 alt={c.title}
                 fill
                 className="object-cover"

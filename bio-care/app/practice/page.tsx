@@ -37,7 +37,7 @@ export default function PracticePage() {
               </CardHeader>
               <CardContent>
                 <Image
-                  src={course.thumbnail || "/placeholder.jpg"}
+                  src={course.thumbnail || "/placeholder.png"}
                   alt="Course"
                   width={500}
                   height={300}

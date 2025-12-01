@@ -10,9 +10,11 @@ export default function HomePage() {
   return (
     <div className="w-full flex flex-col">
 
-      {/* ================= HERO ================= */}
+      {/* ========================================================= */}
+      {/* ========================= HERO ========================== */}
+      {/* ========================================================= */}
       <section className="w-full bg-[var(--brand-green)] py-20 md:py-28">
-        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
 
           {/* Text */}
           <motion.div
@@ -61,18 +63,24 @@ export default function HomePage() {
             className="relative w-full h-64 md:h-96"
           >
             <Image
-              src="/placeholder.jpg"
+              src="/placeholder.png"
               alt="Biology learning"
               fill
-              className="object-cover rounded-xl shadow-lg"
+              className="object-contain"
             />
           </motion.div>
         </div>
       </section>
 
-      {/* ================= ABOUT US ================= */}
+
+
+
+      {/* ========================================================= */}
+      {/* ======================= ABOUT US ======================== */}
+      {/* ========================================================= */}
       <section className="w-full bg-white py-20">
-        <div className="container mx-auto px-4 space-y-10">
+        <div className="max-w-7xl mx-auto px-4 space-y-10">
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -120,9 +128,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ================= GALLERY ================= */}
+
+
+
+      {/* ========================================================= */}
+      {/* ====================== GALLERY ========================== */}
+      {/* ========================================================= */}
       <section className="w-full bg-[var(--brand-green)] py-20">
-        <div className="container mx-auto px-4 space-y-10">
+        <div className="max-w-7xl mx-auto px-4 space-y-10">
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -141,20 +155,27 @@ export default function HomePage() {
                 className="relative w-full h-40 md:h-56"
               >
                 <Image
-                  src="/placeholder.jpg"
-                  alt="Gallery photo"
+                  src={`/gallery/gallery${i + 1}.png`}
+                  alt={`Gallery photo ${i + 1}`}
                   fill
                   className="rounded-xl object-cover shadow-md"
                 />
               </motion.div>
             ))}
           </div>
+
         </div>
       </section>
 
-      {/* ================= TESTIMONIALS ================= */}
+
+
+
+      {/* ========================================================= */}
+      {/* ==================== TESTIMONIALS ======================= */}
+      {/* ========================================================= */}
       <section className="w-full bg-white py-20">
-        <div className="container mx-auto px-4 space-y-12">
+        <div className="max-w-7xl mx-auto px-4 space-y-12">
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -165,9 +186,9 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { name: "Priya Sharma", text: "Bio Care helped me improve from 62% to 89% in Biology!", img: "/placeholder.jpg" },
-              { name: "Aman Verma", text: "The practice tests and doubt sessions made all the difference.", img: "/placeholder.jpg" },
-              { name: "Ritika Das", text: "Their teaching style is amazing. Highly recommended!", img: "/placeholder.jpg" },
+              { name: "Priya Sharma", text: "Bio Care helped me improve from 62% to 89% in Biology!", img: "/testimonials/person.png" },
+              { name: "Aman Verma", text: "The practice tests and doubt sessions made all the difference.", img: "/testimonials/person.png" },
+              { name: "Ritika Das", text: "Their teaching style is amazing. Highly recommended!", img: "/testimonials/person.png" },
             ].map((t, i) => (
               <motion.div
                 key={i}
@@ -198,6 +219,7 @@ export default function HomePage() {
               </motion.div>
             ))}
           </div>
+
         </div>
       </section>
 

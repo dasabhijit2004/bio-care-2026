@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,12 +30,12 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Login failed");
+        toast.error(data.error || "Login failed");
         setLoading(false);
         return;
       }
 
-      alert("Login successful!");
+      toast.success("Login successful!");
 
       if (data.user.isAdmin) {
         router.push("/admin");
@@ -43,7 +44,7 @@ export default function LoginPage() {
       }
 
     } catch (err) {
-      alert("Something went wrong.");
+      toast.error("Something went wrong. Try again!");
     } finally {
       setLoading(false);
     }

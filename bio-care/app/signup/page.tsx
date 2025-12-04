@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -21,7 +22,11 @@ export default function SignupPage() {
 
   const handleSignup = async (e: any) => {
     e.preventDefault();
-    if (password !== confirm) return alert("Passwords do not match!");
+
+    if (password !== confirm) {
+      toast.error("Passwords do not match!");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -40,16 +45,16 @@ export default function SignupPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Signup failed");
+        toast.error(data.error || "Signup failed");
         setLoading(false);
         return;
       }
 
-      alert("Signup successful! Wait for admin approval.");
+      toast.success("Signup successful! Wait for admin approval.");
       router.push("/login");
 
     } catch (err) {
-      alert("Something went wrong.");
+      toast.error("Something went wrong.");
     } finally {
       setLoading(false);
     }

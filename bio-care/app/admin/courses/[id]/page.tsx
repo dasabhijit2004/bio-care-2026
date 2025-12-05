@@ -23,6 +23,12 @@ export default function EditCourse() {
   const [openPdf, setOpenPdf] = useState(false);
   const [openQuiz, setOpenQuiz] = useState(false);
 
+  const [openChapterId, setOpenChapterId] = useState<string | null>(null);
+  const [openVideos, setOpenVideos] = useState<string | null>(null);
+  const [openDocuments, setOpenDocuments] = useState<string | null>(null);
+  const [openQuizzes, setOpenQuizzes] = useState<string | null>(null);
+  const [openQuizId, setOpenQuizId] = useState<string | null>(null);
+
   const [newChapter, setNewChapter] = useState({ title: "" });
   const [newVideo, setNewVideo] = useState({ chapterId: "", title: "", url: "" });
   const [newPdf, setNewPdf] = useState<{
@@ -200,109 +206,178 @@ export default function EditCourse() {
 
       {/* CHAPTERS */}
       <div className="space-y-6">
-        {course.chapters.map((ch: any) => (
-          <Card key={ch._id} className="shadow rounded-xl p-4">
-            <CardHeader className="flex flex-row justify-between items-center">
-              <CardTitle className="text-lg text-[#1717a6]">{ch.title}</CardTitle>
+        {course.chapters.map((ch: any) => {
+          const isChapterOpen = openChapterId === ch._id;
 
-              <Button
-                variant="destructive"
-                onClick={() => deleteChapter(ch._id)}
-                className="rounded-full"
+          return (
+            <Card key={ch._id} className="shadow rounded-xl p-4">
+              <CardHeader
+                onClick={() =>
+                  setOpenChapterId(isChapterOpen ? null : ch._id)
+                }
+                className="flex flex-row justify-between items-center cursor-pointer"
               >
-                Delete Chapter
-              </Button>
-            </CardHeader>
+                <CardTitle className="text-lg text-[#1717a6]">{ch.title}</CardTitle>
 
-            <CardContent className="space-y-6">
+                <span className="text-xl">{isChapterOpen ? "▲" : "▼"}</span>
+              </CardHeader>
 
-              {/* VIDEOS */}
-              <div>
-                <h3 className="font-semibold mb-2 text-[#1717a6]">Videos</h3>
-                {ch.videos.map((v: any) => (
-                  <div key={v._id} className="flex justify-between p-2 border rounded mb-2">
-                    <span>{v.title}</span>
-
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deleteVideo(ch._id, v._id)}
+              {isChapterOpen && (
+                <CardContent className="space-y-6 mt-3 animate-fadeIn">
+                  {/* ================= VIDEOS ================= */}
+                  <div>
+                    <button
+                      className="font-semibold mb-2 text-[#1717a6] underline"
+                      onClick={() =>
+                        setOpenVideos(openVideos === ch._id ? null : ch._id)
+                      }
                     >
-                      Delete
-                    </Button>
-                  </div>
-                ))}
-              </div>
+                      Videos {openVideos === ch._id ? "▲" : "▼"}
+                    </button>
 
-              {/* PDFs */}
-              <div>
-                <h3 className="font-semibold mb-2 text-[#1717a6]">PDF Documents</h3>
-                {ch.documents.map((d: any) => (
-                  <div key={d._id} className="flex justify-between p-2 border rounded mb-2">
-                    <span>{d.title}</span>
-
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deletePdf(ch._id, d._id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              {/* QUIZZES */}
-              <div>
-                <h3 className="font-semibold mb-2 text-[#1717a6]">Quizzes</h3>
-
-                {ch.quizzes?.map((quiz: any) => (
-                  <div key={quiz._id} className="p-4 border rounded-xl mb-4 bg-gray-50">
-
-                    {/* QUIZ TITLE */}
-                    <h4 className="text-lg font-bold text-[#1717a6]">{quiz.title}</h4>
-
-                    {/* QUESTIONS LIST */}
-                    {(quiz.questions ?? []).map((q: any, qIndex: number) => (
-                      <div key={qIndex} className="mt-3 p-3 bg-white rounded border">
-
-                        <p className="font-medium">
-                          Q{qIndex + 1}. {q.question || "Untitled Question"}
-                        </p>
-
-                        {/* OPTIONS */}
-                        <ol className="list-decimal ml-5 mt-1">
-                          {(q.options ?? []).map((opt: string, optIndex: number) => (
-                            <li
-                              key={optIndex}
-                              className={`${optIndex === q.correctAnswer
-                                ? "text-green-600 font-bold"
-                                : "text-gray-700"
-                                }`}
+                    {openVideos === ch._id && (
+                      <div className="mt-2 space-y-2 animate-fadeIn">
+                        {ch.videos.map((v: any) => (
+                          <div
+                            key={v._id}
+                            className="flex justify-between p-2 border rounded"
+                          >
+                            <span>{v.title}</span>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => deleteVideo(ch._id, v._id)}
                             >
-                              {opt || "Empty option"}
-                            </li>
-                          ))}
-                        </ol>
-
+                              Delete
+                            </Button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="mt-4"
-                      onClick={() => deleteQuiz(ch._id, quiz._id)}
-                    >
-                      Delete Quiz
-                    </Button>
+                    )}
                   </div>
-                ))}
-              </div>
 
-            </CardContent>
-          </Card>
-        ))}
+                  {/* ================= DOCUMENTS ================= */}
+                  <div>
+                    <button
+                      className="font-semibold mb-2 text-[#1717a6] underline"
+                      onClick={() =>
+                        setOpenDocuments(
+                          openDocuments === ch._id ? null : ch._id
+                        )
+                      }
+                    >
+                      Documents {openDocuments === ch._id ? "▲" : "▼"}
+                    </button>
+
+                    {openDocuments === ch._id && (
+                      <div className="mt-2 space-y-2 animate-fadeIn">
+                        {ch.documents.map((d: any) => (
+                          <div
+                            key={d._id}
+                            className="flex justify-between p-2 border rounded"
+                          >
+                            <span>{d.title}</span>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => deletePdf(ch._id, d._id)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ================= QUIZZES ================= */}
+                  <div>
+                    <button
+                      className="font-semibold mb-2 text-[#1717a6] underline"
+                      onClick={() =>
+                        setOpenQuizzes(openQuizzes === ch._id ? null : ch._id)
+                      }
+                    >
+                      Quizzes {openQuizzes === ch._id ? "▲" : "▼"}
+                    </button>
+
+                    {openQuizzes === ch._id && (
+                      <div className="mt-2 space-y-4 animate-fadeIn">
+
+                        {ch.quizzes?.map((quiz: any) => {
+                          const isQuizOpen = openQuizId === quiz._id;
+
+                          return (
+                            <div
+                              key={quiz._id}
+                              className="p-4 border rounded-xl bg-gray-50"
+                            >
+                              {/* Quiz Title Row */}
+                              <div className="flex justify-between items-center">
+                                <h4 className="text-lg font-bold text-[#1717a6]">
+                                  {quiz.title}
+                                </h4>
+
+                                <button
+                                  className="text-[#1717a6] underline"
+                                  onClick={() =>
+                                    setOpenQuizId(isQuizOpen ? null : quiz._id)
+                                  }
+                                >
+                                  {isQuizOpen ? "Hide Questions ▲" : "Show Questions ▼"}
+                                </button>
+                              </div>
+
+                              {/* COLLAPSIBLE QUESTIONS */}
+                              {isQuizOpen && (
+                                <div className="mt-3 space-y-3 animate-fadeIn">
+                                  {(quiz.questions ?? []).map((q: any, qIndex: number) => (
+                                    <div
+                                      key={qIndex}
+                                      className="mt-3 p-3 bg-white rounded border"
+                                    >
+                                      <p className="font-medium">
+                                        Q{qIndex + 1}. {q.question}
+                                      </p>
+
+                                      <ol className="list-decimal ml-5 mt-1">
+                                        {q.options.map((opt: string, optIndex: number) => (
+                                          <li
+                                            key={optIndex}
+                                            className={
+                                              optIndex === q.correctAnswer
+                                                ? "text-green-600 font-bold"
+                                                : "text-gray-700"
+                                            }
+                                          >
+                                            {opt}
+                                          </li>
+                                        ))}
+                                      </ol>
+                                    </div>
+                                  ))}
+
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    className="mt-4"
+                                    onClick={() => deleteQuiz(ch._id, quiz._id)}
+                                  >
+                                    Delete Quiz
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+          );
+        })}
       </div>
 
       {/* ------------------- MODALS ------------------- */}

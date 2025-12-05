@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { X } from "lucide-react";
 
 type Course = {
@@ -63,7 +64,7 @@ export default function CoursesPage() {
 
   const filtered = useMemo(() => {
     let list = courses.slice();
-    
+
     // Removed category filtering logic
 
     if (query.trim())
@@ -84,32 +85,41 @@ export default function CoursesPage() {
     return user.enrolledCourses?.some((c: any) => c._id === courseId);
   };
 
+
   const requestEnroll = async (courseId: string) => {
     if (!user) {
-      setMessage("Please login to subscribe to courses.");
+      toast.error("Please login to subscribe to courses.");
       return;
     }
 
     try {
       setRequesting(courseId);
+
       const res = await fetch("/api/student/request-course", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ courseId }),
       });
 
-      if (res.ok) {
-        setMessage("Request sent — waiting admin approval.");
-      } else {
-        const err = await res.json().catch(() => ({}));
-        setMessage(err.message || "Failed to send request");
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 401) {
+        toast.error("Please login first!");
+        return;
       }
+
+      if (!res.ok) {
+        toast.error(data.error || "Failed to send request");
+        return;
+      }
+
+      toast.success("Request sent — waiting for admin approval");
+
     } catch (err) {
       console.error(err);
-      setMessage("Network error. Please try again later.");
+      toast.error("Network error. Please try again later.");
     } finally {
       setRequesting(null);
-      setTimeout(() => setMessage(null), 4000);
     }
   };
 

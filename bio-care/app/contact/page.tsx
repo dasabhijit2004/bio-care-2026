@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ContactPage() {
   const [form, setForm] = useState({
@@ -23,16 +24,17 @@ export default function ContactPage() {
 
     const res = await fetch("/api/contact", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
 
     setLoading(false);
 
     if (res.ok) {
-      alert("Message sent successfully! We will contact you soon.");
+      toast.success("Message sent successfully! We will contact you soon.");
       setForm({ name: "", phone: "", email: "", userClass: "", message: "" });
     } else {
-      alert("Failed to send message. Try again.");
+      toast.error("Failed to send message. Try again.");
     }
   };
 
@@ -59,6 +61,7 @@ export default function ContactPage() {
                   <Input
                     placeholder="Full Name"
                     className="rounded-xl"
+                    required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
@@ -66,6 +69,8 @@ export default function ContactPage() {
                   <Input
                     placeholder="Phone / WhatsApp"
                     className="rounded-xl"
+                    type="tel"
+                    required
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   />
@@ -75,6 +80,7 @@ export default function ContactPage() {
                   type="email"
                   placeholder="Email"
                   className="rounded-xl"
+                  required
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                 />
@@ -82,6 +88,7 @@ export default function ContactPage() {
                 <Input
                   placeholder="Class / Exam (e.g., Class 12, NEET 2026)"
                   className="rounded-xl"
+                  required
                   value={form.userClass}
                   onChange={(e) => setForm({ ...form, userClass: e.target.value })}
                 />
@@ -90,6 +97,7 @@ export default function ContactPage() {
                   rows={4}
                   placeholder="Your message here..."
                   className="w-full rounded-xl border px-3 py-2"
+                  required
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                 />

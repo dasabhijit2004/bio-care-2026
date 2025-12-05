@@ -7,6 +7,12 @@ export async function POST(req: Request) {
   try {
     const { courseId } = await req.json();
 
+    if (!courseId) {
+      return new Response(JSON.stringify({ error: "No course ID provided" }), {
+        status: 400,
+      });
+    }
+
     const cookieJar = await cookies();
     const token = cookieJar.get("token")?.value;
     if (!token) return new Response("Unauthorized", { status: 401 });

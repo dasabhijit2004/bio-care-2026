@@ -98,16 +98,27 @@ export default function StudentQuizPage() {
         </Card>
       ))}
 
+      {/* ---------- SUBMIT OR SCORE ---------- */}
       {!submitted ? (
         <Button className="bg-[#1717a6] text-white" onClick={handleSubmit}>
           Submit Quiz
         </Button>
       ) : (
-        <Card className="p-4 bg-green-100 border border-green-500">
-          <p className="text-xl font-bold text-green-700">
-            Your Score: {score}/{quiz.questions.length}
-          </p>
-        </Card>
+        <div className="space-y-4">
+          <Card className="p-4 bg-green-100 border border-green-500">
+            <p className="text-xl font-bold text-green-700">
+              Your Score: {score}/{quiz.questions.length}
+            </p>
+          </Card>
+
+          {/* Go to Dashboard Button */}
+          <Button
+            asChild
+            className="bg-[#1717a6] text-white hover:bg-blue-900 px-6 py-2"
+          >
+            <a href="/dashboard/student">Go to Dashboard</a>
+          </Button>
+        </div>
       )}
     </div>
   );

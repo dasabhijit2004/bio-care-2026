@@ -18,7 +18,7 @@ export default function CourseRequests() {
   }, []);
 
   const approveRequest = async (requestId: string) => {
-    await fetch("/api/admin/approve-enrollment", {
+    await fetch("/api/admin/approve-course", {
       method: "POST",
       body: JSON.stringify({ requestId }),
     });

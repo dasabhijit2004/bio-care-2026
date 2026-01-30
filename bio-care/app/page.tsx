@@ -186,9 +186,9 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { name: "Priya Sharma", text: "Bio Care helped me improve from 62% to 89% in Biology!", img: "/testimonials/person.png" },
-              { name: "Aman Verma", text: "The practice tests and doubt sessions made all the difference.", img: "/testimonials/person.png" },
-              { name: "Ritika Das", text: "Their teaching style is amazing. Highly recommended!", img: "/testimonials/person.png" },
+              { name: "Abhijit Das", text: "Bio Care helped me improve from 62% to 89% in Biology!", img: "/testimonials/person.png" },
+              { name: "Subham Pal", text: "The practice tests and doubt sessions made all the difference.", img: "/testimonials/person.png" },
+              { name: "Soutram Singha", text: "Their teaching style is amazing. Highly recommended! Just go for it.", img: "/testimonials/person.png" },
             ].map((t, i) => (
               <motion.div
                 key={i}

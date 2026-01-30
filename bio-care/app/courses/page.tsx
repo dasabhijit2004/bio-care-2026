@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { X } from "lucide-react";
+import Link from "next/link";
 
 type Course = {
   _id: string;
@@ -21,6 +22,15 @@ export default function CoursesPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const refreshUser = async () => {
+    try {
+      const res = await fetch("/api/auth/me", { cache: "no-store" });
+      const data = await res.json();
+      setUser(data.user || null);
+    } catch (err) {
+      console.error("Failed to refresh user", err);
+    }
+  };
 
   // UI state
   const [query, setQuery] = useState("");
@@ -29,6 +39,8 @@ export default function CoursesPage() {
   const [selected, setSelected] = useState<Course | null>(null);
   const [requesting, setRequesting] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [showQR, setShowQR] = useState(false);
+  const [payCourse, setPayCourse] = useState<Course | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -82,7 +94,9 @@ export default function CoursesPage() {
 
   const isSubscribed = (courseId: string) => {
     if (!user) return false;
-    return user.enrolledCourses?.some((c: any) => c._id === courseId);
+    return user.enrolledCourses?.some(
+      (c: any) => c._id?.toString() === courseId
+    );
   };
 
 
@@ -113,7 +127,16 @@ export default function CoursesPage() {
         return;
       }
 
-      toast.success("Request sent — waiting for admin approval");
+      toast.success("Request sent! Please complete payment.");
+
+      setPayCourse(
+        courses.find((c) => c._id === courseId) || null
+      );
+
+      setShowQR(true);
+
+      // Refresh user data
+      await refreshUser();
 
     } catch (err) {
       console.error(err);
@@ -255,7 +278,14 @@ export default function CoursesPage() {
 
                 <div className="flex gap-2">
                   {isSubscribed(selected._id) ? (
-                    <Button disabled className="bg-green-600 text-white">Go to Course</Button>
+                    <Button
+                      asChild
+                      className="bg-green-600 text-white"
+                    >
+                      <Link href={`/courses/${selected._id}`}>
+                        Go to Course
+                      </Link>
+                    </Button>
                   ) : (
                     <Button onClick={() => requestEnroll(selected._id)} className="bg-[#1717a6] text-white">Request Enrollment</Button>
                   )}
@@ -264,6 +294,77 @@ export default function CoursesPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {/* QR PAYMENT MODAL */}
+      {showQR && payCourse && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setShowQR(false)}
+          />
+
+          <div className="relative max-w-md w-full bg-white rounded-lg shadow-lg p-6">
+
+            {/* HEADER */}
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold text-lg text-[#1717a6]">
+                Complete Payment
+              </h3>
+
+              <button
+                onClick={() => setShowQR(false)}
+                className="p-2 rounded hover:bg-gray-100"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* COURSE INFO */}
+            <div className="mb-3 text-sm">
+              <p>
+                <span className="font-medium">Course:</span>{" "}
+                {payCourse.title}
+              </p>
+
+              <p>
+                <span className="font-medium">Amount:</span>{" "}
+                ₹{payCourse.price}
+              </p>
+            </div>
+
+            {/* QR IMAGE */}
+            <div className="flex justify-center my-4">
+              <Image
+                src="/qr-payment.png"   // 👈 Put your QR here
+                alt="Payment QR"
+                width={220}
+                height={220}
+                className="rounded border"
+              />
+            </div>
+
+            {/* INSTRUCTIONS */}
+            <div className="text-sm text-muted-foreground space-y-2 mb-4">
+              <p>✅ Scan this QR using any UPI app.</p>
+              <p>✅ Pay the course amount.</p>
+              <p>✅ Send screenshot on WhatsApp.</p>
+              <p>✅ Admin will approve within 24 hours.</p>
+            </div>
+
+            {/* WHATSAPP BUTTON */}
+            <a
+              href="https://wa.me/918436651955"
+              target="_blank"
+              className="block"
+            >
+              <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                Send Screenshot on WhatsApp
+              </Button>
+            </a>
+
           </div>
         </div>
       )}
